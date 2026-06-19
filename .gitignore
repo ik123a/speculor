@@ -1,0 +1,22 @@
+# Build directories
+build/
+out/
+bin/
+lib/
+
+# IDE configurations
+.vs/
+.vscode/
+.omc/
+*.user
+*.suo
+*.db
+*.opendb
+CMakeSettings.json
+CMakeUserPresets.json
+
+# Local data & logs
+speculor_data/
+vigil_data/
+*.log
+*.tmp

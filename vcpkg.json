@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "speculor",
+  "version": "0.1.0",
+  "dependencies": [
+    "fmt",
+    "spdlog",
+    "cli11",
+    "gtest",
+    "benchmark",
+    "flatbuffers",
+    "zstd",
+    "lz4",
+    "rocksdb"
+  ],
+  "features": {
+    "rest": {
+      "description": "REST API support via crow or cpp-httplib",
+      "dependencies": ["cpp-httplib"]
+    }
+  }
+}

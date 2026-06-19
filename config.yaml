@@ -1,0 +1,33 @@
+# Speculor Configuration
+
+# Engine settings
+input_queue_size: 1024
+thread_pool_size: 4
+log_level: "info"
+
+# Adaptive threshold settings
+default_threshold: 0.75
+threshold_window_size: 1000
+ema_alpha: 0.3
+
+# Storage settings
+enable_persistence: false
+storage_path: "./speculor_data"
+snapshot_interval_ms: 60000
+
+# Active detectors in the pipeline
+detectors:
+  - type: "bloom"
+    parameters:
+      num_bits: "65536"
+      num_hashes: "4"
+      decay_factor: "0.95"
+  - type: "cms"
+    parameters:
+      width: "1024"
+      depth: "4"
+      decay_factor: "0.95"
+  - type: "kdtree"
+    parameters:
+      max_points: "10000"
+      k_neighbors: "3"

@@ -1,0 +1,6 @@
+{"metric_name": "cpu_usage", "value": 45.2, "labels": {"host": "server-1"}}
+{"metric_name": "cpu_usage", "value": 47.8, "labels": {"host": "server-1"}}
+{"metric_name": "cpu_usage", "value": 98.4, "labels": {"host": "server-1"}}
+{"metric_name": "network_rx", "value": 1500.0, "labels": {"interface": "eth0"}}
+{"metric_name": "network_rx", "value": 1600.0, "labels": {"interface": "eth0"}}
+{"metric_name": "network_rx", "value": 999999.0, "labels": {"interface": "eth0"}}
