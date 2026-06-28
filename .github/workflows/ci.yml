@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up CMake
+      uses: jwlawson/actions-setup-cmake@v2
+    - name: Install RocksDB and dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y librocksdb-dev libzstd-dev liblz4-dev libgtest-dev
+    - name: Configure CMake
+      run: cmake -B build -DSPECULOR_BUILD_TESTS=ON
+    - name: Build
+      run: cmake --build build
+    - name: Run Tests
+      run: cd build && ctest --output-on-failure
