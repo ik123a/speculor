@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Options (Disabled by default as directories are currently empty)
-option(SPECULOR_BUILD_TESTS "Build tests" OFF)
+option(SPECULOR_BUILD_TESTS "Build tests" ON)
 option(SPECULOR_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(SPECULOR_BUILD_CLI "Build CLI tool" ON)
 option(SPECULOR_BUILD_REST "Build REST server" ON)
