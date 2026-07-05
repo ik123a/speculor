@@ -115,3 +115,20 @@ curl -X POST http://localhost:8080/event \
 ```bash
 curl http://localhost:8080/alerts
 ```
+
+---
+
+## 🐳 Docker Deployment
+
+### Running with Docker Compose
+You can run the Speculor anomaly detection REST server in a containerized environment (built using a multi-stage Dockerfile with vcpkg and Ninja):
+
+1. **Build and start the container**:
+   ```bash
+   docker compose up -d --build
+   ```
+2. **Access the REST server**:
+   The server listens on port `8080`. Push events and query alerts as described in the Getting Started section above.
+
+Persistent state snapshots are saved in the RocksDB database, which is mounted and persisted on the host machine using a named volume (`speculor-data`).
+
