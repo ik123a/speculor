@@ -1,0 +1,15 @@
+services:
+  speculor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: speculor-server
+    ports:
+      - "8080:8080"
+    volumes:
+      - speculor-data:/app/speculor_data
+    restart: unless-stopped
+
+volumes:
+  speculor-data:
+    driver: local

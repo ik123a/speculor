@@ -11,7 +11,8 @@
     "flatbuffers",
     "zstd",
     "lz4",
-    "rocksdb"
+    "rocksdb",
+    "nlohmann-json"
   ],
   "features": {
     "rest": {
