@@ -83,6 +83,14 @@ cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.
 cmake --build build --config Release
 ```
 
+> **Note:** the default configure builds the core library, tests, CLI and REST
+> server. The optional `SPECULOR_BUILD_BENCHMARKS` and `SPECULOR_BUILD_EXAMPLES`
+> targets are both `OFF` by default, and the `benchmarks/` and `examples/`
+> source files they reference are not present in this repository. Enabling
+> either option with `-DSPECULOR_BUILD_BENCHMARKS=ON` or
+> `-DSPECULOR_BUILD_EXAMPLES=ON` will fail at configure time until those
+> directories are added.
+
 ---
 
 ## Getting Started
