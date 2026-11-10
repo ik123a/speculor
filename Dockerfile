@@ -30,6 +30,7 @@ RUN /opt/vcpkg/vcpkg install --triplet=x64-linux
 COPY CMakeLists.txt ./
 COPY include/ include/
 COPY src/ src/
+COPY tests/ tests/
 COPY config.yaml ./
 
 # Configure and compile using CMake and Ninja toolchain

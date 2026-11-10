@@ -24,15 +24,15 @@ Config Config::from_yaml(const std::string& path) {
     Config config;
 
     // Read configuration values with defaults
-    config.input_queue_size = config_node["input_queue_size"] || 1024;
-    config.thread_pool_size = config_node["thread_pool_size"] || 4;
-    config.log_level = config_node["log_level"] || "info";
-    config.default_threshold = config_node["default_threshold"] || 0.75;
-    config.threshold_window_size = config_node["threshold_window_size"] || 1000;
-    config.ema_alpha = config_node["ema_alpha"] || 0.3;
-    config.enable_persistence = config_node["enable_persistence"] || false;
-    config.storage_path = config_node["storage_path"] || "./SPECULOR_data";
-    config.snapshot_interval_ms = config_node["snapshot_interval_ms"] || 60000;
+    config.input_queue_size = config_node["input_queue_size"].as<decltype(config.input_queue_size)>(config.input_queue_size);
+    config.thread_pool_size = config_node["thread_pool_size"].as<decltype(config.thread_pool_size)>(config.thread_pool_size);
+    config.log_level = config_node["log_level"].as<decltype(config.log_level)>(config.log_level);
+    config.default_threshold = config_node["default_threshold"].as<decltype(config.default_threshold)>(config.default_threshold);
+    config.threshold_window_size = config_node["threshold_window_size"].as<decltype(config.threshold_window_size)>(config.threshold_window_size);
+    config.ema_alpha = config_node["ema_alpha"].as<decltype(config.ema_alpha)>(config.ema_alpha);
+    config.enable_persistence = config_node["enable_persistence"].as<decltype(config.enable_persistence)>(config.enable_persistence);
+    config.storage_path = config_node["storage_path"].as<decltype(config.storage_path)>(config.storage_path);
+    config.snapshot_interval_ms = config_node["snapshot_interval_ms"].as<decltype(config.snapshot_interval_ms)>(config.snapshot_interval_ms);
 
     // Parse detector configurations
     config.detectors.clear();
@@ -40,11 +40,11 @@ Config Config::from_yaml(const std::string& path) {
     if (detectors_node) {
         for (auto detector : detectors_node) {
             DetectorConfig dc;
-            dc.type = detector["type"] || "bloom";
+            dc.type = detector["type"].as<std::string>("bloom");
 
             auto params = detector["parameters"];
             for (auto param : params) {
-                dc.parameters[param.first.asString()] = param.second.asString();
+                dc.parameters[param.first.as<std::string>()] = param.second.as<std::string>();
             }
 
             config.detectors.push_back(dc);
@@ -56,7 +56,7 @@ Config Config::from_yaml(const std::string& path) {
     auto plugins_node = config_node["plugin_paths"];
     if (plugins_node) {
         for (auto plugin : plugins_node) {
-            config.plugin_paths.push_back(plugin.asString());
+            config.plugin_paths.push_back(plugin.as<std::string>());
         }
     }
 
@@ -79,27 +79,27 @@ Config Config::from_json(const std::string& path) {
     Config config;
 
     // Read configuration values with defaults
-    config.input_queue_size = config_json["input_queue_size"] || 1024;
-    config.thread_pool_size = config_json["thread_pool_size"] || 4;
-    config.log_level = config_json["log_level"] || "info";
-    config.default_threshold = config_json["default_threshold"] || 0.75;
-    config.threshold_window_size = config_json["threshold_window_size"] || 1000;
-    config.ema_alpha = config_json["ema_alpha"] || 0.3;
-    config.enable_persistence = config_json["enable_persistence"] || false;
-    config.storage_path = config_json["storage_path"] || "./SPECULOR_data";
-    config.snapshot_interval_ms = config_json["snapshot_interval_ms"] || 60000;
+    config.input_queue_size = config_json.value("input_queue_size", config.input_queue_size);
+    config.thread_pool_size = config_json.value("thread_pool_size", config.thread_pool_size);
+    config.log_level = config_json.value("log_level", config.log_level);
+    config.default_threshold = config_json.value("default_threshold", config.default_threshold);
+    config.threshold_window_size = config_json.value("threshold_window_size", config.threshold_window_size);
+    config.ema_alpha = config_json.value("ema_alpha", config.ema_alpha);
+    config.enable_persistence = config_json.value("enable_persistence", config.enable_persistence);
+    config.storage_path = config_json.value("storage_path", config.storage_path);
+    config.snapshot_interval_ms = config_json.value("snapshot_interval_ms", config.snapshot_interval_ms);
 
     // Parse detector configurations
     config.detectors.clear();
-    auto detectors_node = config_json["detectors"];
-    if (detectors_node) {
+    auto detectors_node = config_json.value("detectors", nlohmann::json::array());
+    if (!detectors_node.empty()) {
         for (auto detector : detectors_node) {
             DetectorConfig dc;
-            dc.type = detector["type"] || "bloom";
+            dc.type = detector.value("type", std::string("bloom"));
 
-            auto params = detector["parameters"];
-            for (auto param : params) {
-                dc.parameters[param.first.get<std::string>() ] = param.second.get<std::string>();
+            auto params = detector.value("parameters", nlohmann::json::object());
+            for (const auto& param : params.items()) {
+                dc.parameters[param.key()] = param.value().get<std::string>();
             }
 
             config.detectors.push_back(dc);
@@ -108,8 +108,8 @@ Config Config::from_json(const std::string& path) {
 
     // Parse plugin paths
     config.plugin_paths.clear();
-    auto plugins_node = config_json["plugin_paths"];
-    if (plugins_node) {
+    auto plugins_node = config_json.value("plugin_paths", nlohmann::json::array());
+    if (!plugins_node.empty()) {
         for (auto plugin : plugins_node) {
             config.plugin_paths.push_back(plugin.get<std::string>());
         }
@@ -121,19 +121,19 @@ Config Config::from_json(const std::string& path) {
 std::string Config::to_yaml() const {
     YAML::Node config_node;
 
-    config_node["input_queue_size"] = config_.input_queue_size;
-    config_node["thread_pool_size"] = config_.thread_pool_size;
-    config_node["log_level"] = config_.log_level;
-    config_node["default_threshold"] = config_.default_threshold;
-    config_node["threshold_window_size"] = config_.threshold_window_size;
-    config_node["ema_alpha"] = config_.ema_alpha;
-    config_node["enable_persistence"] = config_.enable_persistence;
-    config_node["storage_path"] = config_.storage_path;
-    config_node["snapshot_interval_ms"] = config_.snapshot_interval_ms;
+    config_node["input_queue_size"] = input_queue_size;
+    config_node["thread_pool_size"] = thread_pool_size;
+    config_node["log_level"] = log_level;
+    config_node["default_threshold"] = default_threshold;
+    config_node["threshold_window_size"] = threshold_window_size;
+    config_node["ema_alpha"] = ema_alpha;
+    config_node["enable_persistence"] = enable_persistence;
+    config_node["storage_path"] = storage_path;
+    config_node["snapshot_interval_ms"] = snapshot_interval_ms;
 
     // Add detectors
     YAML::Node detectors_node;
-    for (const auto& detector : config_.detectors) {
+    for (const auto& detector : detectors) {
         YAML::Node detector_node;
         detector_node["type"] = detector.type;
         for (const auto& param : detector.parameters) {
@@ -145,7 +145,7 @@ std::string Config::to_yaml() const {
 
     // Add plugin paths
     YAML::Node plugins_node;
-    for (const auto& path : config_.plugin_paths) {
+    for (const auto& path : plugin_paths) {
         plugins_node.push_back(path);
     }
     config_node["plugin_paths"] = plugins_node;
@@ -156,19 +156,19 @@ std::string Config::to_yaml() const {
 std::string Config::to_json() const {
     nlohmann::json config_json;
 
-    config_json["input_queue_size"] = config_.input_queue_size;
-    config_json["thread_pool_size"] = config_.thread_pool_size;
-    config_json["log_level"] = config_.log_level;
-    config_json["default_threshold"] = config_.default_threshold;
-    config_json["threshold_window_size"] = config_.threshold_window_size;
-    config_json["ema_alpha"] = config_.ema_alpha;
-    config_json["enable_persistence"] = config_.enable_persistence;
-    config_json["storage_path"] = config_.storage_path;
-    config_json["snapshot_interval_ms"] = config_.snapshot_interval_ms;
+    config_json["input_queue_size"] = input_queue_size;
+    config_json["thread_pool_size"] = thread_pool_size;
+    config_json["log_level"] = log_level;
+    config_json["default_threshold"] = default_threshold;
+    config_json["threshold_window_size"] = threshold_window_size;
+    config_json["ema_alpha"] = ema_alpha;
+    config_json["enable_persistence"] = enable_persistence;
+    config_json["storage_path"] = storage_path;
+    config_json["snapshot_interval_ms"] = snapshot_interval_ms;
 
     // Add detectors
     config_json["detectors"] = nlohmann::json::array();
-    for (const auto& detector : config_.detectors) {
+    for (const auto& detector : detectors) {
         config_json["detectors"].push_back(nlohmann::json::object());
         config_json["detectors"].back()["type"] = detector.type;
         for (const auto& param : detector.parameters) {
@@ -178,7 +178,7 @@ std::string Config::to_json() const {
 
     // Add plugin paths
     config_json["plugin_paths"] = nlohmann::json::array();
-    for (const auto& path : config_.plugin_paths) {
+    for (const auto& path : plugin_paths) {
         config_json["plugin_paths"].push_back(path);
     }
 

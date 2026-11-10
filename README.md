@@ -1,6 +1,40 @@
 # Speculor
 
-**Speculor** is a high-performance C++ streaming anomaly detection engine designed for real-time event analytics. It features a multi-algorithm composite detection pipeline integrated with a dynamic, adaptive threshold alerting system.
+## Verified scope — 10 November 2026
+
+This is a C++ anomaly-engine prototype, with Bloom/CMS/KD-tree detector sources,
+an adaptive threshold, CLI/REST entry points and RocksDB persistence code. The
+full application is **not build-verified**. The independent public Event header
+regression compiles and runs with GCC C++17; repeated inclusion previously
+redefined `speculor::Event`, now prevented by an include guard.
+
+Run the independent check without downloading dependencies:
+
+```sh
+g++ -std=c++17 -Wall -Wextra -pedantic -I include tests/unit/test_event_header.cpp -o event-header-test
+./event-header-test
+```
+
+The CMake test block also registers this check as `speculor_event_header_test`.
+Full configuration in the review environment stops at missing `spdlog`. Configuration parsing/serialization now uses typed YAML/JSON defaults and
+round-trips detector maps, plugins, booleans and numeric values. A standalone
+regression against yaml-cpp 0.8.0 / nlohmann JSON 3.11.3 covers defaults, custom
+values (including zero/false), both serializations and malformed input. CMake now
+links these dependencies, the vcpkg manifest includes YAML and the default REST
+feature, and Docker copies the default-enabled tests. These targeted repairs do
+not establish a complete engine build.
+`process_async` queues events but schedules work on captured copies without
+draining that queue, so the architecture below is an intended design rather than
+a measured throughput or concurrency guarantee.
+
+![Source review flow diagram, not a runtime screenshot](docs/review-flow.svg)
+
+The diagram is based on source inspection. No throughput benchmark, complete
+pipeline execution, Docker build or persistence recovery was run in this review.
+The existing license and project history are retained.
+
+
+**Speculor** is a C++ streaming anomaly detection prototype for event analytics. It features a multi-algorithm composite detection pipeline integrated with a dynamic, adaptive threshold alerting system.
 
 ---
 
