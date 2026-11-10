@@ -12,8 +12,10 @@
     "zstd",
     "lz4",
     "rocksdb",
-    "nlohmann-json"
+    "nlohmann-json",
+    "yaml-cpp"
   ],
+  "default-features": ["rest"],
   "features": {
     "rest": {
       "description": "REST API support via crow or cpp-httplib",

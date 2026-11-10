@@ -24,6 +24,8 @@ find_package(lz4 CONFIG REQUIRED)
 find_package(RocksDB CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 find_package(benchmark CONFIG REQUIRED)
+find_package(yaml-cpp CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 if(SPECULOR_BUILD_REST)
   find_package(httplib CONFIG REQUIRED)
@@ -66,6 +68,8 @@ target_link_libraries(speculor_core PUBLIC
     zstd::libzstd_static
     lz4::lz4
     RocksDB::rocksdb
+    yaml-cpp::yaml-cpp
+    nlohmann_json::nlohmann_json
 )
 
 set_target_properties(speculor_core PROPERTIES
@@ -99,6 +103,11 @@ if(SPECULOR_BUILD_TESTS)
     )
     target_link_libraries(speculor_tests PRIVATE speculor_core GTest::gtest_main)
     add_test(NAME speculor_unit_tests COMMAND speculor_tests)
+    add_executable(speculor_event_header_test tests/unit/test_event_header.cpp)
+    add_test(NAME speculor_event_header_test COMMAND speculor_event_header_test)
+    add_executable(speculor_config_test tests/unit/test_config_standalone.cpp src/core/config.cpp)
+    target_link_libraries(speculor_config_test PRIVATE yaml-cpp::yaml-cpp nlohmann_json::nlohmann_json)
+    add_test(NAME speculor_config_test COMMAND speculor_config_test ${CMAKE_CURRENT_BINARY_DIR}/config-fixtures)
 endif()
 
 # Benchmarks
